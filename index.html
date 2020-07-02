@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Abdelfattah Mohamed</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+
+<section>
+    <!-- navigation -->
+    <nav>
+        <!-- logo -->
+        <a href="#" class="logo"> Abdelfattah </a>
+
+        <!-- menue -->
+        <ul>
+            <li><a href="#" class="active"> Home </a></li>
+            <li><a href="#about"> About </a></li>
+            <li><a href="#services"> Services </a></li>
+            <li><a href="#portfolio"> Portfolio </a></li>
+            <li><a href="#contacts"> Contacts </a></li>
+        </ul>
+
+        <!-- bars -->
+        <div class="toggle"></div>
+
+    </nav>
+
+    <!-- text -->
+    <div class="text-container">
+        <p>Hello,</p>
+        <p>I'm Abdelfattah</p>
+        <p>I am an Undergraduate software Engineer.</p>
+        <a href="mailto:abdelfattahmohamed30@gmail.com" target="_blank">
+            <button class="contact-btn">Contact me</button>
+        </a>
+        <a href="https://drive.google.com/file/d/12Fxef3e-5SeKuIySsHoWHHjPc7NuKHNj/view"
+           target="_blank">
+            <button class="down-cv"> Download Resume</button>
+        </a>
+    </div>
+
+    <!-- model -->
+    <img src="images/model.png" class="model personal-img" alt="model">
+
+</section>
+
+<br/><br/><br/><br/><br/>
+
+<div class="about-container" id="about">
+    <!-- about_img -->
+    <img src="images/about-img_.png">
+
+    <!-- about_text -->
+    <div class="about-text">
+        <p>About me</p>
+        <br/>
+        <p>Software engineer & Back end web developer</p>
+        <p> Hello, My name is Abdelfattah Mohamed.
+            I'm an undergraduate at Computer and Systems Engineering Department, Faculty of Engineering, Alexandria
+            University and expected to graduate in 2021.
+            I have had a great deal of software engineering experience in web development using Ruby on Rails and
+            Desktop application Using Java, also I'm familiar
+            to web designing using HTML, CSS, BootStrap, JavaScript and vue.js Most of my experience is from
+            self-learning and creating real productive projects.
+        </p>
+        <!-- button -->
+        <a href="mailto:abdelfattahmohamed30@gmail.com" target="_blank">
+            <button>Contact Me</button>
+        </a>
+        <a href="https://drive.google.com/file/d/12Fxef3e-5SeKuIySsHoWHHjPc7NuKHNj/view"
+           target="_blank">
+            <button>Download Resume</button>
+        </a>
+    </div>
+</div>
+
+<div class="services" id="services">
+    <div class="services-text">
+        <p>Services</p>
+        <p>Services required</p>
+        <p>If you want to make a software for yor business contact me. </p>
+
+    </div>
+
+    <!-- box -->
+    <div class="box-container">
+        <!-- first box -->
+        <div class="box-1">
+            <span>1</span>
+            <p class="heading"> Web Development</p>
+            <p class="details">Build a Websites and Web-Application
+                with optimizer code and responsive design with APIs</p>
+        </div>
+
+        <!-- second box -->
+        <div class="box-2">
+            <span>2</span>
+            <p class="heading"> Web Design</p>
+            <p class="details">Design and build a Websites and Web-Application
+                with responsive design</p>
+        </div>
+
+        <!-- third box -->
+        <div class="box-3">
+            <span>3</span>
+            <p class="heading"> Desktop Applications</p>
+            <p class="details">Build a Desktop application that's help
+                your brand with optimizer code and design</p>
+        </div>
+
+    </div>
+</div>
+
+<!-- contact Me -->
+<div class="contact-me" id="contacts">
+    <p>I'd love to hear for you</p>
+    <a href="mailto:abdelfattahmohamed30@gmail.com" target="_blank">
+        <button>Contact me</button>
+    </a>
+</div>
+
+<!-- footer -->
+<footer>
+    <p>Find me on my network</p>
+    <div class="social-icons">
+        <a href="mailto:abdelfattahmohamed30@gmail.com" target="_blank" class="fa fa-google"></a>
+        <a href="https://www.linkedin.com/in/abdelfattah-mohamed/" target="_blank" class="fa fa-linkedin"></a>
+        <a href="https://github.com/Abdelfattah-Mohamed" target="_blank" class="fa fa-github"></a>
+        <a href="https://www.facebook.com/Abdelfattah.Mohamed.0" target="_blank" class="fa fa-facebook"></a>
+        <a href="https://wa.link/emjhyk" target="_blank" class="fa fa-whatsapp"></a>
+        <a href="https://www.instagram.com/abdelftah__mohamed" target="_blank" class="fa fa-instagram"></a>
+    </div>
+</footer>
+
+<!-- social bar -->
+<div class="social-bar">
+    <a href="mailto:abdelfattahmohamed30@gmail.com" target="_blank" class="fa fa-google"></a>
+    <a href="https://www.linkedin.com/in/abdelfattah-mohamed/" target="_blank" class="fa fa-linkedin"></a>
+    <a href="https://github.com/Abdelfattah-Mohamed" target="_blank" class="fa fa-github"></a>
+    <a href="https://www.facebook.com/Abdelfattah.Mohamed.0" target="_blank" class="fa fa-facebook"></a>
+    <a href="https://wa.link/emjhyk" target="_blank" class="fa fa-whatsapp"></a>
+    <a href="https://www.instagram.com/abdelftah__mohamed" target="_blank" class="fa fa-instagram"></a>
+</div>
+
+<script type="text/javascript" src="js/jQuery.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.toggle').click(function () {
+            $('.toggle').toggleClass('active')
+            $('nav').toggleClass('active')
+        })
+    })
+</script>
+</body>
+</html>
