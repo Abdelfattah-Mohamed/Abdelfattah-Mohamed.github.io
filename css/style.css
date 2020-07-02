@@ -24,6 +24,7 @@ section {
 }
 
 nav {
+    position: fixed;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -32,6 +33,8 @@ nav {
     box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.2);
     padding: 0px 5%;
     float: top;
+    width: 100%;
+
 }
 
 nav ul {
@@ -119,6 +122,7 @@ nav ul li a {
     font-size: 14px;
     outline: none;
     margin: 0px 10px;
+    cursor: pointer;
 }
 
 .contact-btn {
@@ -197,6 +201,7 @@ button:active {
     border: none;
     font-family: calibri;
     background-color: #262525;
+    cursor: pointer;
 }
 
 .services {
@@ -295,6 +300,71 @@ button:active {
     margin: 0px 0px 20px 0px;
 }
 
+.skills {
+    width: 100%;
+    height: 1500px;
+    background-image: url("../images/project in your mind.png");
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.skills h2 {
+    color: #ffffff;
+    font-size: 50px;
+    font-family: calibri;
+    font-weight: bold;
+}
+
+.skills p {
+    color: #ffffff;
+    font-size: 25px;
+    font-family: calibri;
+}
+
+.skills ul {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.skills li {
+    box-sizing: border-box;
+    list-style: none;
+    width: 25%;
+    margin: 20px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+.skills img{
+    width: 150px;
+    height: 150px;
+    cursor: pointer;
+}
+
+.work {
+    height: 600px;
+    background-color: #ffffff;
+    padding: 2% 10% 0px 10%;
+}
+
+.work-text p:nth-child(1) {
+    font-family: calibri;
+    font-weight: bold;
+    color: #3e3d3d;
+    font-size: 30px;
+    line-height: 0px;
+}
+
+.work-text {
+    width: 500px;
+    margin: 50px 0px;
+}
+
+
 .contact-me {
     width: 100%;
     height: 280px;
@@ -323,6 +393,7 @@ button:active {
     font-size: 14px;
     font-weight: bold;
     border-radius: 10px;
+    cursor: pointer;
 }
 
 button:active {
