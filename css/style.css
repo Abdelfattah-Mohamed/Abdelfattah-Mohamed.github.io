@@ -34,7 +34,7 @@ nav {
     padding: 0px 5%;
     float: top;
     width: 100%;
-
+    box-sizing: border-box;
 }
 
 nav ul {
@@ -454,19 +454,19 @@ button:active {
 
 .items .openButton {
     float: left;
-    left: -200px;
+    left: -400px;
     transition: all 0.2s linear, 1s;
 }
 
 .items .projectLink {
     float: right;
-    right: -200px;
+    right: -400px;
     transition: all 0.2s linear, 0.5s;
 }
 
 .items .github {
     float: bottom;
-    bottom: -200px;
+    bottom: -400px;
     transition: all 0.2s linear, 0.25s;
 }
 
