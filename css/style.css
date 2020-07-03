@@ -106,16 +106,16 @@ nav ul li a {
     margin: 45px 0px 25px;
 }
 
+.text-container span {
+    font-family: calibri;
+    font-size: 10px;
+}
+
 .text-container {
     position: absolute;
     left: 15%;
     top: 45%;
     transform: translate(-15%, -45%);
-}
-
-.text-container span {
-    font-family: calibri;
-    font-size: 10px;
 }
 
 .text-container button {
