@@ -113,7 +113,7 @@ nav ul li a {
     transform: translate(-15%, -45%);
 }
 
-.text-container .show {
+.text-container span {
     font-family: calibri;
     font-size: 10px;
 }
@@ -673,7 +673,7 @@ footer p:nth-child(2) {
     .work {
         padding: 2% 5% 0px 5%;
     }
-    
+
     .contact-me {
         height: 200px;
     }
