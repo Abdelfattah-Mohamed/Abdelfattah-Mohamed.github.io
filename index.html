@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="css/style.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css"/>
 </head>
 <body>
 
@@ -20,6 +21,7 @@
             <li><a href="#" class="active"> Home </a></li>
             <li><a href="#about"> About </a></li>
             <li><a href="#services"> Services </a></li>
+            <li><a href="#skills"> Skills </a></li>
             <li><a href="#portfolio"> Portfolio </a></li>
             <li><a href="#contacts"> Contacts </a></li>
         </ul>
@@ -118,12 +120,19 @@
 <!-- skills -->
 <div class="skills" id="skills">
     <h2>My Skills</h2>
+    <p>Programming language</p>
+    <ul>
+        <li><img alt="" src="images/java.png"></li>
+        <li><img alt="" src="images/c.png"></li>
+        <li><img alt="" src="images/cpp.png"></li>
+        <li><img alt="" src="images/ruby.png"></li>
+    </ul>
+    <br/>
     <p>Web development Technologies</p>
     <ul>
         <li><img alt="" src="images/html.png"></li>
         <li><img alt="" src="images/css.png"></li>
         <li><img alt="" src="images/boot_strap.png"></li>
-
     </ul>
     <br/>
     <ul>
@@ -138,13 +147,6 @@
         <li><img alt="" src="images/firebase.png"></li>
     </ul>
     <br/>
-    <p>Desktop Technologies</p>
-    <ul>
-        <li><img alt="" src="images/java.png"></li>
-        <li><img alt="" src="images/c.png"></li>
-        <li><img alt="" src="images/cpp.png"></li>
-    </ul>
-    <br/>
     <p>Other Technologies</p>
     <ul>
         <li><img alt="" src="images/git.png"></li>
@@ -157,65 +159,189 @@
 
 <!-- My work -->
 <div class="work" id="portfolio">
-    <div class="services-text">
-        <p>My Work</p>
+    <div class="container">
+        <div class="row">
+            <div class="services-text">
+                <p>My Work</p>
+            </div>
+            <div class="filter">
+                <ul id="filters">
+                    <li><a href="#portfolio" data-filter="*">
+                        <button class="current">All</button>
+                    </a></li>
+                    <li><a href="#portfolio" data-filter=".web-apps">
+                        <button class="prev">Web APPs</button>
+                    </a></li>
+                    <li><a href="#portfolio" data-filter=".desktop-apps">
+                        <button class="prev">Desktop Apps</button>
+                    </a></li>
+                    <li><a href="#portfolio" data-filter=".games">
+                        <button class="prev">Games</button>
+                    </a></li>
+                </ul>
+            </div>
+
+            <div class="itemsContainer">
+                <ul class="items">
+                    <li class="web-apps col-xs-6 col-sm-4 col-md-3 col-lg-3">
+                        <div class="item">
+                            <img src="images/about-img_.png">
+                            <div class="icons">
+                                <a href="images/model.png" title="View image" class="openButton" data-fancybox
+                                   data-caption="<h2>Image Header</h2><p>Lorem ipsum dolor sit amet, consetetur
+                                    sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
+                                     magna aliquyam erat, sed diam voluptua.</p>">
+                                    <i class="fa fa-search"></i>
+                                </a>
+                                <a href="" target="_blank" class="projectLink">
+                                    <i class="fa fa-link"></i>
+                                </a>
+                                <a href="" target="_blank" class="github">
+                                    <i class="fa fa-github"></i>
+                                </a>
+                            </div>
+                            <div class="imageOverlay"></div>
+                        </div>
+                    </li>
+
+                    <li class="web-apps col-xs-6 col-sm-4 col-md-3 col-lg-3">
+                        <div class="item">
+                            <img src="images/about-img_.png">
+                            <div class="icons">
+                                <a href="images/model.png" title="View image" class="openButton" data-fancybox
+                                   data-caption="<h2>Image Header</h2><p>Lorem ipsum dolor sit amet, consetetur
+                                    sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
+                                     magna aliquyam erat, sed diam voluptua.</p>">
+                                    <i class="fa fa-search"></i>
+                                </a>
+                                <a href="" target="_blank" class="projectLink">
+                                    <i class="fa fa-link"></i>
+                                </a>
+                                <a href="" target="_blank" class="github">
+                                    <i class="fa fa-github"></i>
+                                </a>
+                            </div>
+                            <div class="imageOverlay"></div>
+                        </div>
+                    </li>
+
+                    <li class="desktop-apps col-xs-6 col-sm-4 col-md-3 col-lg-3">
+                        <div class="item">
+                            <img src="images/about-img_.png">
+                            <div class="icons">
+                                <a href="images/model.png" title="View image" class="openButton" data-fancybox
+                                   data-caption="<h2>Image Header</h2><p>Lorem ipsum dolor sit amet, consetetur
+                                    sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
+                                     magna aliquyam erat, sed diam voluptua.</p>">
+                                    <i class="fa fa-search"></i>
+                                </a>
+                                <a href="" target="_blank" class="projectLink">
+                                    <i class="fa fa-link"></i>
+                                </a>
+                                <a href="" target="_blank" class="github">
+                                    <i class="fa fa-github"></i>
+                                </a>
+                            </div>
+                            <div class="imageOverlay"></div>
+                        </div>
+                    </li>
+
+                    <li class="desktop-apps col-xs-6 col-sm-4 col-md-3 col-lg-3">
+                        <div class="item">
+                            <img src="images/about-img_.png">
+                            <div class="icons">
+                                <a href="images/model.png" title="View image" class="openButton" data-fancybox
+                                   data-caption="<h2>Image Header</h2><p>Lorem ipsum dolor sit amet, consetetur
+                                    sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
+                                     magna aliquyam erat, sed diam voluptua.</p>">
+                                    <i class="fa fa-search"></i>
+                                </a>
+                                <a href="" target="_blank" class="projectLink">
+                                    <i class="fa fa-link"></i>
+                                </a>
+                                <a href="" target="_blank" class="github">
+                                    <i class="fa fa-github"></i>
+                                </a>
+                            </div>
+                            <div class="imageOverlay"></div>
+                        </div>
+                    </li>
+
+                    <li class="games col-xs-6 col-sm-4 col-md-3 col-lg-3">
+                        <div class="item">
+                            <img src="images/about-img_.png">
+                            <div class="icons">
+                                <a href="images/model.png" title="View image" class="openButton" data-fancybox
+                                   data-caption="<h2>Image Header</h2><p>Lorem ipsum dolor sit amet, consetetur
+                                    sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
+                                     magna aliquyam erat, sed diam voluptua.</p>">
+                                    <i class="fa fa-search"></i>
+                                </a>
+                                <a href="" target="_blank" class="projectLink">
+                                    <i class="fa fa-link"></i>
+                                </a>
+                                <a href="" target="_blank" class="github">
+                                    <i class="fa fa-github"></i>
+                                </a>
+                            </div>
+                            <div class="imageOverlay"></div>
+                        </div>
+                    </li>
+
+                    <li class="games col-xs-6 col-sm-4 col-md-3 col-lg-3">
+                        <div class="item">
+                            <img src="images/about-img_.png">
+                            <div class="icons">
+                                <a href="images/model.png" title="View image" class="openButton" data-fancybox
+                                   data-caption="<h2>Image Header</h2><p>Lorem ipsum dolor sit amet, consetetur
+                                    sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
+                                     magna aliquyam erat, sed diam voluptua.</p>">
+                                    <i class="fa fa-search"></i>
+                                </a>
+                                <a href="" target="_blank" class="projectLink">
+                                    <i class="fa fa-link"></i>
+                                </a>
+                                <a href="" target="_blank" class="github">
+                                    <i class="fa fa-github"></i>
+                                </a>
+                            </div>
+                            <div class="imageOverlay"></div>
+                        </div>
+                    </li>
+
+                    <li class="desktop-apps col-xs-6 col-sm-4 col-md-3 col-lg-3">
+                        <div class="item">
+                            <img src="images/about-img_.png">
+                            <div class="icons">
+                                <a href="images/model.png" title="View image" class="openButton" data-fancybox
+                                   data-caption="<h2>Image Header</h2><p>Lorem ipsum dolor sit amet, consetetur
+                                    sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
+                                     magna aliquyam erat, sed diam voluptua.</p>">
+                                    <i class="fa fa-search"></i>
+                                </a>
+                                <a href="" target="_blank" class="projectLink">
+                                    <i class="fa fa-link"></i>
+                                </a>
+                                <a href="" target="_blank" class="github">
+                                    <i class="fa fa-github"></i>
+                                </a>
+                            </div>
+                            <div class="imageOverlay"></div>
+                        </div>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
     </div>
 
-    <!-- box -->
-    <div class="box-container">
-        <!-- first box -->
-        <div class="box-1">
-            <p class="heading"> Web Development</p>
-            <p class="details">Build a Websites and Web-Application
-                with optimizer code and responsive design with APIs</p>
-        </div>
-
-        <!-- second box -->
-        <div class="box-2">
-            <p class="heading"> Web Design</p>
-            <p class="details">Design and build a Websites and Web-Application
-                with responsive design</p>
-        </div>
-
-        <!-- third box -->
-        <div class="box-3">
-            <p class="heading"> Desktop Applications</p>
-            <p class="details">Build a Desktop application that's help
-                your brand with optimizer code and design</p>
-        </div>
-
-    </div>
-    <br/>
-    <div class="box-container">
-        <!-- first box -->
-        <div class="box-1">
-            <p class="heading"> Web Development</p>
-            <p class="details">Build a Websites and Web-Application
-                with optimizer code and responsive design with APIs</p>
-        </div>
-
-        <!-- second box -->
-        <div class="box-2">
-            <p class="heading"> Web Design</p>
-            <p class="details">Design and build a Websites and Web-Application
-                with responsive design</p>
-        </div>
-
-        <!-- third box -->
-        <div class="box-3">
-            <p class="heading"> Desktop Applications</p>
-            <p class="details">Build a Desktop application that's help
-                your brand with optimizer code and design</p>
-        </div>
-
-    </div>
 
 </div>
 
 
 <!-- contact Me -->
 <div class="contact-me" id="contacts">
-    <p>I'd love to hear for you</p>
+    <p>I'd love to hear from you</p>
     <a href="mailto:abdelfattahmohamed30@gmail.com" target="_blank">
         <button>Contact me</button>
     </a>
@@ -257,6 +383,9 @@
 
 <script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
 <script type="text/javascript" src="js/jQuery.js"></script>
+<script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
 <script type="text/javascript">
     $(document).ready(function () {
         $('.toggle').click(function () {
@@ -264,6 +393,36 @@
             $('nav').toggleClass('active')
         })
     })
+
+    $("[data-fancybox]").fancybox();
+
+    $(".items").isotope({
+        filter: '*',
+        animationOption: {
+            duration: 1500,
+            easing: 'linear',
+            queue: false
+        }
+    })
+
+    $("#filters a").click(function () {
+        var pre = $("#filters .current");
+        pre.addClass("prev");
+        pre.removeClass("current");
+        var curr = $(this).children("button");
+        console.log(curr)
+        curr.addClass("current");
+        curr.removeClass("prev");
+        $(".items").isotope({
+            filter: $(this).attr("data-filter"),
+            animationOption: {
+                duration: 1500,
+                easing: 'linear',
+                queue: false
+            }
+        })
+    })
 </script>
+
 </body>
 </html>

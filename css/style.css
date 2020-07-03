@@ -205,7 +205,6 @@ button:active {
 }
 
 .services {
-    height: 600px;
     background-color: #ffffff;
     padding: 2% 10% 0px 10%;
 }
@@ -253,6 +252,7 @@ button:active {
 .box-container {
     display: flex;
     justify-content: space-between;
+    padding: 20px;
 }
 
 .box-1 {
@@ -302,7 +302,6 @@ button:active {
 
 .skills {
     width: 100%;
-    height: 1500px;
     background-image: url("../images/project in your mind.png");
     display: flex;
     flex-direction: column;
@@ -339,14 +338,14 @@ button:active {
     display: flex;
     justify-content: center;
 }
-.skills img{
+
+.skills img {
     width: 150px;
     height: 150px;
     cursor: pointer;
 }
 
 .work {
-    height: 600px;
     background-color: #ffffff;
     padding: 2% 10% 0px 10%;
 }
@@ -364,6 +363,132 @@ button:active {
     margin: 50px 0px;
 }
 
+#filters {
+    display: flex;
+    align-items: center;
+}
+
+.filter button {
+    width: 130px;
+    height: 42px;
+    font-family: calibri;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 14px;
+    outline: none;
+    margin: 0px 10px;
+    cursor: pointer;
+}
+
+.current {
+    background-color: #0b0b0b;
+    color: #ffffff;
+    border: none;
+}
+
+.prev {
+    border: 2px solid #373636;
+    color: #373636;
+}
+
+.items li {
+    display: inline-block;
+    padding: 5px;
+}
+
+.itemsContainer {
+    width: 100%;
+}
+
+.items li img {
+    width: 100%;
+    transition: all 0.2s linear, 2s;
+}
+
+.items .item {
+    position: relative;
+    display: block;
+    overflow: hidden;
+}
+
+.items .icons {
+    position: absolute;
+    width: 90px;
+    height: 40px;
+    left: 50%;
+    top: 50%;
+    margin: -20px auto 0 -47px;
+    text-align: center;
+    z-index: 3;
+}
+
+.items .icons i {
+    color: #ffffff;
+    font-size: 20px;
+    margin-top: 9px;
+}
+
+.items a {
+    width: 40px;
+    height: 40px;
+    background-color: #5c5c5c;
+    position: relative;
+    display: inline-block;
+    margin: 1px;
+}
+
+.items .imageOverlay {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    opacity: 0;
+    transition: all 0.2s linear, 1s;
+}
+
+.items .item:hover .imageOverlay {
+    opacity: 1;
+}
+
+.items .openButton {
+    float: left;
+    left: -200px;
+    transition: all 0.2s linear, 1s;
+}
+
+.items .projectLink {
+    float: right;
+    right: -200px;
+    transition: all 0.2s linear, 0.5s;
+}
+
+.items .github {
+    float: bottom;
+    bottom: -200px;
+    transition: all 0.2s linear, 0.25s;
+}
+
+.items .item:hover .openButton {
+    left: 0px;
+    transition: all 0.2s linear, 0.25s;
+}
+
+.items .item:hover .projectLink {
+    right: 0px;
+    transition: all 0.2s linear, 0.5s;
+}
+
+.items .item:hover .github {
+    bottom: 0px;
+    transition: all 0.2s linear, 1s;
+}
+
+.items .item:hover img {
+    transition: all 0.2s linear, 2s;
+    transform: scale(1.05, 1.05);
+}
 
 .contact-me {
     width: 100%;
