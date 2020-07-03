@@ -113,6 +113,11 @@ nav ul li a {
     transform: translate(-15%, -45%);
 }
 
+.text-container .show {
+    font-family: calibri;
+    font-size: 10px;
+}
+
 .text-container button {
     width: 130px;
     height: 42px;
@@ -665,6 +670,10 @@ footer p:nth-child(2) {
         margin: 10px;
     }
 
+    .work {
+        padding: 2% 5% 0px 5%;
+    }
+    
     .contact-me {
         height: 200px;
     }
