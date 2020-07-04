@@ -152,7 +152,6 @@ button:active {
     bottom: 0px;
     left: 93%;
     transform: translateX(-70%);
-    z-index: 2;
 }
 
 .about-container {
@@ -598,6 +597,7 @@ footer p:nth-child(2) {
     border: 1px solid #cbcbcb;
     box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.2);
     color: #2b2b2b;
+    z-index: 3;
 }
 
 .social-icons a:hover,
