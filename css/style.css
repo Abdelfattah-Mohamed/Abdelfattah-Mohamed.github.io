@@ -35,6 +35,7 @@ nav {
     float: top;
     width: 100%;
     box-sizing: border-box;
+    z-index: 1;
 }
 
 nav ul {
@@ -597,6 +598,7 @@ footer p:nth-child(2) {
     border: 1px solid #cbcbcb;
     box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.2);
     color: #2b2b2b;
+    z-index: 3;
 }
 
 .social-icons a:hover,
