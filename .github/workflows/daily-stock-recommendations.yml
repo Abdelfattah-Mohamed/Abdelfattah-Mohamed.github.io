@@ -1,0 +1,33 @@
+name: Daily stock research ideas
+
+on:
+  schedule:
+    # Weekday mornings for US markets. Adjust the UTC hour for your timezone.
+    - cron: "0 12 * * 1-5"
+  workflow_dispatch:
+
+jobs:
+  recommend:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generate recommendations
+        run: python daily_stock_recommendations.py --output daily-stock-recommendations.md
+
+      - name: Add report to job summary
+        run: cat daily-stock-recommendations.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-stock-recommendations
+          path: daily-stock-recommendations.md
