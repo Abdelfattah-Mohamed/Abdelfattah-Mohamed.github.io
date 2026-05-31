@@ -2,9 +2,9 @@
 
 This repository now includes a small Python system that generates two daily stock research ideas from:
 
-- Yahoo Finance market quote data
-- public Reddit discussion from stock-related subreddits
-- Yahoo Finance RSS headlines
+- Stooq delayed market quote data
+- Reddit discussion from stock-related subreddits
+- Google News RSS headlines
 
 The output is a ranked Markdown report with reasons, risks, and sample signal titles.
 
@@ -15,24 +15,34 @@ The output is a ranked Markdown report with reasons, risks, and sample signal ti
 Python 3.10+ is enough; the tool uses only the standard library.
 
 ```bash
-python daily_stock_recommendations.py
+python3 daily_stock_recommendations.py
 ```
 
 Write the report to a file:
 
 ```bash
-python daily_stock_recommendations.py --output daily-stock-recommendations.md
+python3 daily_stock_recommendations.py --output daily-stock-recommendations.md
 ```
 
 Run without network access using deterministic sample data:
 
 ```bash
-python daily_stock_recommendations.py --offline-sample
+python3 daily_stock_recommendations.py --offline-sample
 ```
 
 ## Customize the stocks it can rank
 
 Edit `config/watchlist.txt`. The system only recommends tickers from this watchlist, so keep it to liquid stocks or ETFs you are willing to research.
+
+## Reddit access
+
+Anonymous Reddit JSON requests are often blocked in hosted environments. For reliable Reddit signals, create a Reddit app and configure these repository or environment secrets before the scheduled job runs:
+
+- `REDDIT_CLIENT_ID`
+- `REDDIT_CLIENT_SECRET`
+- `REDDIT_USER_AGENT` (optional, defaults to `daily-stock-research-bot/1.0`)
+
+If those values are missing or Reddit blocks access, the recommender still runs and scores the market/news signals.
 
 ## Daily morning automation
 

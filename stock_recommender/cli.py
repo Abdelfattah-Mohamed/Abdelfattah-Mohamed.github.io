@@ -7,9 +7,9 @@ from pathlib import Path
 
 from stock_recommender.data_sources import (
     DataSourceError,
+    fetch_google_news_signals,
     fetch_reddit_signals,
-    fetch_yahoo_news_signals,
-    fetch_yahoo_quotes,
+    fetch_stooq_quotes,
     load_watchlist,
 )
 from stock_recommender.models import MarketQuote, RecommendationReport, TextSignal
@@ -47,13 +47,13 @@ def main() -> int:
     else:
         tickers = load_watchlist(args.watchlist)
         try:
-            quotes = fetch_yahoo_quotes(tickers)
+            quotes = fetch_stooq_quotes(tickers)
         except DataSourceError as exc:
             raise SystemExit(f"Market quote fetch failed: {exc}") from exc
 
         quote_tickers = [quote.ticker for quote in quotes]
         reddit_signals = fetch_reddit_signals(quote_tickers)
-        news_signals = fetch_yahoo_news_signals(quote_tickers)
+        news_signals = fetch_google_news_signals(quote_tickers)
 
     recommendations = tuple(
         rank_candidates(quotes, reddit_signals, news_signals, limit=max(args.limit, 1))

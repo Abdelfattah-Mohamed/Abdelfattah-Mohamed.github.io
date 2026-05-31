@@ -2,14 +2,19 @@
 
 from __future__ import annotations
 
+import csv
+import io
 import json
+import os
 import re
 import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
+from base64 import b64encode
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Mapping
 
 from stock_recommender.models import MarketQuote, TextSignal
 from stock_recommender.sentiment import average_sentiment
@@ -50,19 +55,37 @@ class HttpClient:
         self.timeout = timeout
         self.headers = {
             "Accept": "application/json,text/xml,application/rss+xml,text/html",
-            "User-Agent": "daily-stock-research-bot/1.0",
+            "Origin": "https://www.nasdaq.com",
+            "Referer": "https://www.nasdaq.com/",
+            "User-Agent": "Mozilla/5.0 (compatible; daily-stock-research-bot/1.0)",
         }
 
-    def get_text(self, url: str) -> str:
-        request = urllib.request.Request(url, headers=self.headers)
+    def get_text(self, url: str, headers: Mapping[str, str] | None = None) -> str:
+        request_headers = dict(self.headers)
+        if headers:
+            request_headers.update(headers)
+        request = urllib.request.Request(url, headers=request_headers)
         try:
             with urllib.request.urlopen(request, timeout=self.timeout) as response:
                 return response.read().decode("utf-8", errors="replace")
         except (urllib.error.URLError, TimeoutError) as exc:
             raise DataSourceError(f"Could not fetch {url}: {exc}") from exc
 
-    def get_json(self, url: str) -> dict:
-        return json.loads(self.get_text(url))
+    def get_json(self, url: str, headers: Mapping[str, str] | None = None) -> dict:
+        return json.loads(self.get_text(url, headers=headers))
+
+    def post_json(self, url: str, data: Mapping[str, str], headers: Mapping[str, str] | None = None) -> dict:
+        request_headers = dict(self.headers)
+        request_headers["Content-Type"] = "application/x-www-form-urlencoded"
+        if headers:
+            request_headers.update(headers)
+        encoded_data = urllib.parse.urlencode(data).encode("utf-8")
+        request = urllib.request.Request(url, data=encoded_data, headers=request_headers, method="POST")
+        try:
+            with urllib.request.urlopen(request, timeout=self.timeout) as response:
+                return json.loads(response.read().decode("utf-8", errors="replace"))
+        except (urllib.error.URLError, TimeoutError, ValueError) as exc:
+            raise DataSourceError(f"Could not post to {url}: {exc}") from exc
 
 
 def load_watchlist(path: Path) -> list[str]:
@@ -110,6 +133,67 @@ def fetch_yahoo_quotes(tickers: Iterable[str], client: HttpClient | None = None)
     return quotes
 
 
+def fetch_stooq_quotes(tickers: Iterable[str], client: HttpClient | None = None) -> list[MarketQuote]:
+    """Fetch delayed batch quote data from Stooq's public CSV endpoint."""
+
+    client = client or HttpClient()
+    stooq_symbols = [_to_stooq_symbol(ticker) for ticker in sorted(set(tickers))]
+    if not stooq_symbols:
+        return []
+
+    symbols = "+".join(stooq_symbols)
+    csv_text = client.get_text(f"https://stooq.com/q/l/?s={symbols}&f=sd2t2ohlcv&h&e=csv")
+    rows = csv.DictReader(io.StringIO(csv_text))
+    quotes: list[MarketQuote] = []
+
+    for row in rows:
+        symbol = str(row.get("Symbol") or "")
+        if not symbol or row.get("Date") == "N/D":
+            continue
+
+        ticker = _from_stooq_symbol(symbol)
+        open_price = _float(row.get("Open"))
+        close_price = _float(row.get("Close"))
+        volume = _int(row.get("Volume"))
+        if close_price <= 0:
+            continue
+
+        if open_price > 0:
+            price_change_pct = ((close_price - open_price) / open_price) * 100.0
+        else:
+            price_change_pct = 0.0
+
+        quotes.append(
+            MarketQuote(
+                ticker=ticker,
+                name=ticker,
+                price=close_price,
+                price_change_pct=price_change_pct,
+                volume=volume,
+                average_volume=volume,
+            )
+        )
+
+    return quotes
+
+
+def fetch_nasdaq_quotes(tickers: Iterable[str], client: HttpClient | None = None) -> list[MarketQuote]:
+    """Fetch current quote data from Nasdaq's public quote endpoints."""
+
+    client = client or HttpClient()
+    unique_tickers = sorted(set(ticker.upper() for ticker in tickers))
+    quotes: list[MarketQuote] = []
+
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        futures = {executor.submit(_fetch_single_nasdaq_quote, ticker, client): ticker for ticker in unique_tickers}
+        for future in as_completed(futures):
+            quote = future.result()
+            if quote:
+                quotes.append(quote)
+
+    return sorted(quotes, key=lambda quote: quote.ticker)
+
+
 def fetch_reddit_signals(
     tickers: Iterable[str],
     client: HttpClient | None = None,
@@ -121,12 +205,16 @@ def fetch_reddit_signals(
     client = client or HttpClient()
     ticker_set = {ticker.upper() for ticker in tickers}
     tracked_texts: dict[str, list[str]] = {ticker: [] for ticker in ticker_set}
+    reddit_headers = build_reddit_oauth_headers(client)
+    base_url = "https://oauth.reddit.com" if reddit_headers else "https://www.reddit.com"
 
     for subreddit in subreddits:
-        url = f"https://www.reddit.com/r/{subreddit}/hot.json?limit={posts_per_subreddit}"
+        path = f"/r/{subreddit}/hot"
+        suffix = "" if reddit_headers else ".json"
+        url = f"{base_url}{path}{suffix}?limit={posts_per_subreddit}"
         try:
-            payload = client.get_json(url)
-        except DataSourceError:
+            payload = client.get_json(url, headers=reddit_headers)
+        except (DataSourceError, ValueError):
             continue
 
         for child in payload.get("data", {}).get("children", []):
@@ -147,6 +235,54 @@ def fetch_reddit_signals(
         for ticker, texts in tracked_texts.items()
         if texts
     }
+
+
+def fetch_nasdaq_news_signals(
+    tickers: Iterable[str],
+    client: HttpClient | None = None,
+    headlines_per_ticker: int = 8,
+) -> dict[str, TextSignal]:
+    """Fetch recent Nasdaq article titles related to each ticker."""
+
+    client = client or HttpClient()
+    unique_tickers = sorted(set(ticker.upper() for ticker in tickers))
+    signals: dict[str, TextSignal] = {}
+
+    with ThreadPoolExecutor(max_workers=6) as executor:
+        futures = {
+            executor.submit(_fetch_single_nasdaq_news_signal, ticker, client, headlines_per_ticker): ticker
+            for ticker in unique_tickers
+        }
+        for future in as_completed(futures):
+            signal = future.result()
+            if signal and signal.mentions:
+                signals[signal.ticker] = signal
+
+    return signals
+
+
+def fetch_google_news_signals(
+    tickers: Iterable[str],
+    client: HttpClient | None = None,
+    headlines_per_ticker: int = 8,
+) -> dict[str, TextSignal]:
+    """Fetch ticker-specific Google News RSS headlines."""
+
+    client = client or HttpClient()
+    unique_tickers = sorted(set(ticker.upper() for ticker in tickers))
+    signals: dict[str, TextSignal] = {}
+
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        futures = {
+            executor.submit(_fetch_single_google_news_signal, ticker, client, headlines_per_ticker): ticker
+            for ticker in unique_tickers
+        }
+        for future in as_completed(futures):
+            signal = future.result()
+            if signal and signal.mentions:
+                signals[signal.ticker] = signal
+
+    return signals
 
 
 def fetch_yahoo_news_signals(
@@ -212,6 +348,168 @@ def parse_rss_titles(rss: str) -> list[str]:
         if title:
             titles.append(title.strip())
     return titles
+
+
+def build_reddit_oauth_headers(client: HttpClient) -> dict[str, str] | None:
+    """Build OAuth headers when REDDIT_CLIENT_ID and REDDIT_CLIENT_SECRET exist."""
+
+    client_id = os.getenv("REDDIT_CLIENT_ID")
+    client_secret = os.getenv("REDDIT_CLIENT_SECRET")
+    if not client_id or not client_secret:
+        return None
+
+    credentials = b64encode(f"{client_id}:{client_secret}".encode("utf-8")).decode("ascii")
+    user_agent = os.getenv("REDDIT_USER_AGENT", "daily-stock-research-bot/1.0")
+    try:
+        token = client.post_json(
+            "https://www.reddit.com/api/v1/access_token",
+            {"grant_type": "client_credentials"},
+            {"Authorization": f"Basic {credentials}", "User-Agent": user_agent},
+        ).get("access_token")
+    except DataSourceError:
+        return None
+    if not token:
+        return None
+
+    return {"Authorization": f"Bearer {token}", "User-Agent": user_agent}
+
+
+def _fetch_single_nasdaq_news_signal(
+    ticker: str,
+    client: HttpClient,
+    headlines_per_ticker: int,
+) -> TextSignal | None:
+    query = urllib.parse.urlencode({"q": f"{ticker}|stocks", "limit": str(headlines_per_ticker)})
+    try:
+        payload = client.get_json(f"https://api.nasdaq.com/api/news/topic/articlebysymbol?{query}")
+    except (DataSourceError, ValueError):
+        return None
+
+    rows = (payload.get("data") or {}).get("rows", [])
+    titles: list[str] = []
+    for row in rows:
+        title = str(row.get("title") or "").strip()
+        if not title:
+            continue
+        if _nasdaq_row_mentions_ticker(row, ticker):
+            titles.append(title)
+
+    if not titles:
+        return None
+
+    return TextSignal(
+        ticker=ticker,
+        mentions=len(titles),
+        sentiment=average_sentiment(titles),
+        sample_titles=tuple(titles[:3]),
+    )
+
+
+def _nasdaq_row_mentions_ticker(row: dict, ticker: str) -> bool:
+    primary = str(row.get("primarysymbol") or "").upper()
+    related = [str(symbol).split("|", maxsplit=1)[0].upper() for symbol in row.get("related_symbols", [])]
+    return ticker == primary or ticker in related
+
+
+def _fetch_single_google_news_signal(
+    ticker: str,
+    client: HttpClient,
+    headlines_per_ticker: int,
+) -> TextSignal | None:
+    query = urllib.parse.urlencode(
+        {
+            "q": f"{ticker} stock",
+            "hl": "en-US",
+            "gl": "US",
+            "ceid": "US:en",
+        }
+    )
+    try:
+        rss = client.get_text(f"https://news.google.com/rss/search?{query}")
+    except DataSourceError:
+        return None
+
+    headlines = parse_rss_titles(rss)[:headlines_per_ticker]
+    if not headlines:
+        return None
+
+    return TextSignal(
+        ticker=ticker,
+        mentions=len(headlines),
+        sentiment=average_sentiment(headlines),
+        sample_titles=tuple(headlines[:3]),
+    )
+
+
+def _fetch_single_nasdaq_quote(ticker: str, client: HttpClient) -> MarketQuote | None:
+    encoded_ticker = urllib.parse.quote(ticker, safe="")
+    try:
+        info = client.get_json(
+            f"https://api.nasdaq.com/api/quote/{encoded_ticker}/info?assetclass=stocks"
+        ).get("data")
+        summary = client.get_json(
+            f"https://api.nasdaq.com/api/quote/{encoded_ticker}/summary?assetclass=stocks"
+        ).get("data")
+    except (DataSourceError, ValueError):
+        return None
+
+    if not info:
+        return None
+
+    primary = info.get("primaryData") or {}
+    summary_data = (summary or {}).get("summaryData") or {}
+    price = _money(primary.get("lastSalePrice"))
+    if price <= 0:
+        return None
+
+    average_volume = _summary_int(summary_data, "AverageVolume")
+    volume = _int_from_string(primary.get("volume")) or _summary_int(summary_data, "ShareVolume")
+
+    return MarketQuote(
+        ticker=ticker,
+        name=info.get("companyName") or ticker,
+        price=price,
+        price_change_pct=_percent(primary.get("percentageChange")),
+        volume=volume,
+        average_volume=average_volume or volume,
+        market_cap=_summary_int(summary_data, "MarketCap") or None,
+    )
+
+
+def _to_stooq_symbol(ticker: str) -> str:
+    return f"{ticker.lower()}.us"
+
+
+def _from_stooq_symbol(symbol: str) -> str:
+    return symbol.upper().removesuffix(".US")
+
+
+def _summary_int(summary_data: dict, key: str) -> int:
+    row = summary_data.get(key) or {}
+    return _int_from_string(row.get("value"))
+
+
+def _money(value: object) -> float:
+    if value is None:
+        return 0.0
+    text = str(value).replace("$", "").replace(",", "").strip()
+    return _float(text)
+
+
+def _percent(value: object) -> float:
+    if value is None:
+        return 0.0
+    text = str(value).replace("%", "").replace("+", "").replace(",", "").strip()
+    return _float(text)
+
+
+def _int_from_string(value: object) -> int:
+    if value is None:
+        return 0
+    text = str(value).replace("$", "").replace(",", "").strip()
+    if text in {"", "N/A"}:
+        return 0
+    return _int(text)
 
 
 def _float(value: object) -> float:
