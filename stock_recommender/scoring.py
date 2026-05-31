@@ -129,3 +129,10 @@ def rank_candidates(
     ]
     ranked.sort(key=lambda candidate: candidate.score, reverse=True)
     return ranked[:limit]
+
+
+def rank_by_market(quotes: list[MarketQuote], *, limit: int) -> list[MarketQuote]:
+    """Return quotes with the strongest standalone market scores."""
+
+    ranked = sorted(quotes, key=lambda quote: score_market(quote)[0], reverse=True)
+    return ranked[:limit]

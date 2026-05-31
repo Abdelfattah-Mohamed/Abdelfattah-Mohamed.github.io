@@ -14,7 +14,7 @@ from stock_recommender.data_sources import (
 )
 from stock_recommender.models import MarketQuote, RecommendationReport, TextSignal
 from stock_recommender.reporting import render_markdown
-from stock_recommender.scoring import rank_candidates
+from stock_recommender.scoring import rank_by_market, rank_candidates
 
 DEFAULT_WATCHLIST = Path("config/watchlist.txt")
 
@@ -30,6 +30,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="Path to a newline-delimited ticker watchlist.",
     )
     parser.add_argument("--limit", type=int, default=2, help="Number of ideas to return.")
+    parser.add_argument(
+        "--signal-candidate-limit",
+        type=int,
+        default=75,
+        help=(
+            "Number of market-ranked tickers to enrich with per-ticker news. "
+            "The full watchlist is still market-ranked first."
+        ),
+    )
     parser.add_argument("--output", type=Path, help="Optional Markdown output file.")
     parser.add_argument(
         "--offline-sample",
@@ -53,7 +62,14 @@ def main() -> int:
 
         quote_tickers = [quote.ticker for quote in quotes]
         reddit_signals = fetch_reddit_signals(quote_tickers)
-        news_signals = fetch_google_news_signals(quote_tickers)
+        market_signal_candidates = rank_by_market(
+            quotes,
+            limit=max(args.signal_candidate_limit, args.limit),
+        )
+        signal_tickers = sorted(
+            {quote.ticker for quote in market_signal_candidates} | set(reddit_signals.keys())
+        )
+        news_signals = fetch_google_news_signals(signal_tickers)
 
     recommendations = tuple(
         rank_candidates(quotes, reddit_signals, news_signals, limit=max(args.limit, 1))

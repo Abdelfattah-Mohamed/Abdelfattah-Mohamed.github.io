@@ -20,6 +20,7 @@ from stock_recommender.models import MarketQuote, TextSignal
 from stock_recommender.sentiment import average_sentiment
 
 DEFAULT_SUBREDDITS = ("stocks", "investing", "wallstreetbets", "StockMarket")
+STOOQ_BATCH_SIZE = 150
 COMMON_WORD_TICKERS = {
     "A",
     "AI",
@@ -133,14 +134,38 @@ def fetch_yahoo_quotes(tickers: Iterable[str], client: HttpClient | None = None)
     return quotes
 
 
-def fetch_stooq_quotes(tickers: Iterable[str], client: HttpClient | None = None) -> list[MarketQuote]:
+def fetch_stooq_quotes(
+    tickers: Iterable[str],
+    client: HttpClient | None = None,
+    batch_size: int = STOOQ_BATCH_SIZE,
+) -> list[MarketQuote]:
     """Fetch delayed batch quote data from Stooq's public CSV endpoint."""
 
     client = client or HttpClient()
-    stooq_symbols = [_to_stooq_symbol(ticker) for ticker in sorted(set(tickers))]
-    if not stooq_symbols:
+    unique_tickers = sorted(set(ticker.upper() for ticker in tickers))
+    if not unique_tickers:
         return []
 
+    quotes: list[MarketQuote] = []
+    errors: list[str] = []
+    chunks = list(_chunked(unique_tickers, max(batch_size, 1)))
+
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        futures = {executor.submit(_fetch_stooq_quote_batch, chunk, client): chunk for chunk in chunks}
+        for future in as_completed(futures):
+            try:
+                quotes.extend(future.result())
+            except DataSourceError as exc:
+                errors.append(str(exc))
+
+    if errors and not quotes:
+        raise DataSourceError("; ".join(errors[:3]))
+
+    return sorted(quotes, key=lambda quote: quote.ticker)
+
+
+def _fetch_stooq_quote_batch(tickers: list[str], client: HttpClient) -> list[MarketQuote]:
+    stooq_symbols = [_to_stooq_symbol(ticker) for ticker in tickers]
     symbols = "+".join(stooq_symbols)
     csv_text = client.get_text(f"https://stooq.com/q/l/?s={symbols}&f=sd2t2ohlcv&h&e=csv")
     rows = csv.DictReader(io.StringIO(csv_text))
@@ -482,6 +507,10 @@ def _to_stooq_symbol(ticker: str) -> str:
 
 def _from_stooq_symbol(symbol: str) -> str:
     return symbol.upper().removesuffix(".US")
+
+
+def _chunked(items: list[str], size: int) -> list[list[str]]:
+    return [items[index : index + size] for index in range(0, len(items), size)]
 
 
 def _summary_int(summary_data: dict, key: str) -> int:

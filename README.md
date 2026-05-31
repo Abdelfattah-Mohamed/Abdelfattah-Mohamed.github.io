@@ -34,6 +34,12 @@ python3 daily_stock_recommendations.py --offline-sample
 
 Edit `config/watchlist.txt`. The system only recommends tickers from this watchlist, so keep it to liquid stocks or ETFs you are willing to research.
 
+The default watchlist contains 1000 liquid Nasdaq-listed symbols sourced from Nasdaq Trader's public symbol directory and filtered to common-stock-like issues. Because the universe is large, the daily run first scores all available quotes by market action, then enriches the strongest market shortlist plus Reddit-mentioned tickers with per-ticker news. Tune the enrichment size with:
+
+```bash
+python3 daily_stock_recommendations.py --signal-candidate-limit 100
+```
+
 ## Reddit access
 
 Anonymous Reddit JSON requests are often blocked in hosted environments. For reliable Reddit signals, create a Reddit app and configure these repository or environment secrets before the scheduled job runs:
@@ -54,7 +60,7 @@ Each ticker receives a transparent score from:
 
 1. market action: daily price move, volume vs. average volume, liquidity, and market cap
 2. Reddit signal: mention count and simple sentiment from tracked posts
-3. news signal: recent headline count and simple sentiment from Yahoo Finance RSS
+3. news signal: recent headline count and simple sentiment from Google News RSS
 
 The script returns the highest-scoring two candidates and includes risk notes when a stock has weak momentum, low liquidity, negative text tone, or small market cap.
 

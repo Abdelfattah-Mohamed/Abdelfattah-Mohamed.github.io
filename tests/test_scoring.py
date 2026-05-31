@@ -1,7 +1,7 @@
 import unittest
 
 from stock_recommender.models import MarketQuote, TextSignal
-from stock_recommender.scoring import rank_candidates, score_candidate
+from stock_recommender.scoring import rank_by_market, rank_candidates, score_candidate
 
 
 class ScoringTest(unittest.TestCase):
@@ -38,6 +38,17 @@ class ScoringTest(unittest.TestCase):
         self.assertTrue(any("price is below" in risk for risk in candidate.risks))
         self.assertTrue(any("average volume" in risk for risk in candidate.risks))
         self.assertTrue(any("market cap" in risk for risk in candidate.risks))
+
+    def test_rank_by_market_limits_to_market_shortlist(self):
+        quotes = [
+            MarketQuote("SLOW", "Slow Corp", 20.0, -2.0, 1_000_000, 1_000_000),
+            MarketQuote("FAST", "Fast Corp", 20.0, 4.0, 3_000_000, 1_000_000),
+            MarketQuote("MID", "Mid Corp", 20.0, 1.0, 1_500_000, 1_000_000),
+        ]
+
+        ranked = rank_by_market(quotes, limit=2)
+
+        self.assertEqual([quote.ticker for quote in ranked], ["FAST", "MID"])
 
 
 if __name__ == "__main__":
