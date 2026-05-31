@@ -20,7 +20,7 @@ from stock_recommender.models import MarketQuote, TextSignal
 from stock_recommender.sentiment import average_sentiment
 
 DEFAULT_SUBREDDITS = ("stocks", "investing", "wallstreetbets", "StockMarket")
-STOOQ_BATCH_SIZE = 150
+STOOQ_BATCH_SIZE = 100
 COMMON_WORD_TICKERS = {
     "A",
     "AI",
